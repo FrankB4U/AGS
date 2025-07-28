@@ -2,7 +2,7 @@ backend:
   name: github
   repo: FrankB4U/AGS
   branch: main
-  base_url: "https://<NEW_NETLIFY_SITE>.netlify.app/.netlify/functions"
+  base_url: "https://agscms.netlify.app/.netlify/functions"
   auth_endpoint: auth
 
 media_folder: "uploads"
