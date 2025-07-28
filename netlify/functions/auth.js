@@ -1,12 +1,19 @@
 exports.handler = async (event) => {
   try {
-    const params = new URLSearchParams(event.queryStringParameters || {});
-    const code = params.get("code");
+    // Support both GET (query params) and POST (body) for code
+    let code = null;
+
+    if (event.httpMethod === "GET" && event.queryStringParameters) {
+      code = event.queryStringParameters.code;
+    } else if (event.httpMethod === "POST" && event.body) {
+      const params = new URLSearchParams(event.body);
+      code = params.get("code");
+    }
 
     if (!code) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing OAuth code", details: params.toString() }),
+        body: JSON.stringify({ error: "Missing OAuth code" }),
       };
     }
 
