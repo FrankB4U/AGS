@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   const githubAuthorizeUrl = "https://github.com/login/oauth/authorize";
 
   // Redirect URI must match the callback function we will create next
-  const redirectUri = "https://agscms.netlify.app/.netlify/functions/auth/callback";
+  const redirectUri = "https://agscms.netlify.app/.netlify/functions/callback";
 
   // Build authorization URL
   const url = `${githubAuthorizeUrl}?client_id=${clientId}&redirect_uri=${encodeURIComponent(
