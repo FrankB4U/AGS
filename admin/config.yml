@@ -1,32 +1,51 @@
-backend:
-  name: github
-  repo: FrankB4U/AGS     # your GitHub repo
-  branch: main
-  base_url: https://agscms.netlify.app/.netlify/functions
-  auth_endpoint: start
+exports.handler = async (event) => {
+  const params = new URLSearchParams(event.queryStringParameters || {});
+  const code = params.get("code");
 
-media_folder: "uploads"
-public_folder: "/uploads"
+  if (!code) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Missing OAuth code", details: params.toString() }),
+    };
+  }
 
-collections:
-  - name: "posts"
-    label: "Promotions & News"
-    folder: "posts"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Body", name: "body", widget: "markdown" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+  try {
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
-  - name: "prices"
-    label: "Price List"
-    folder: "prices"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Material Name", name: "material", widget: "string" }
-      - { label: "Price per unit", name: "price", widget: "string" }
-      - { label: "Description", name: "description", widget: "text", required: false }
-      - { label: "Last Updated", name: "date", widget: "datetime" }
+    const response = await fetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: data.error_description || data.error }),
+      };
+    }
+
+    // Redirect to /admin with access token in URL hash
+    return {
+      statusCode: 302,
+      headers: {
+        Location: `/admin/#access_token=${data.access_token}&token_type=${data.token_type}&scope=${data.scope}`,
+      },
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
+};
