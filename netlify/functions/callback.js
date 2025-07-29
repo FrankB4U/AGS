@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   if (!code) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "Missing OAuth code", details: params.toString() }),
+      body: JSON.stringify({ error: "Missing OAuth code" }),
     };
   }
 
@@ -13,11 +13,10 @@ exports.handler = async (event) => {
     const clientId = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
-    // Exchange code for access token
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
+      headers: { Accept: "application/json" },
+      body: new URLSearchParams({
         client_id: clientId,
         client_secret: clientSecret,
         code,
@@ -26,18 +25,9 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
-    if (data.error) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: data.error }),
-      };
-    }
-
-    // Redirect to /admin with token in hash
-    const redirectUrl = `https://agscms.netlify.app/admin/#access_token=${data.access_token}&token_type=bearer`;
     return {
-      statusCode: 302,
-      headers: { Location: redirectUrl },
+      statusCode: 200,
+      body: JSON.stringify(data), // Decap expects this format
     };
   } catch (err) {
     return {
