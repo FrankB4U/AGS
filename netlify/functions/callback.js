@@ -13,7 +13,6 @@ exports.handler = async (event) => {
     const clientId = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
-    // Exchange code for token using form-urlencoded
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -29,9 +28,19 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
+    if (data.error) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: data.error_description || data.error }),
+      };
+    }
+
+    // Redirect to /admin with access token in URL hash
     return {
-      statusCode: 200,
-      body: JSON.stringify(data),
+      statusCode: 302,
+      headers: {
+        Location: `/admin/#access_token=${data.access_token}&token_type=${data.token_type}&scope=${data.scope}`,
+      },
     };
   } catch (err) {
     return {
