@@ -1,7 +1,6 @@
-const fetch = require("node-fetch");
-
 exports.handler = async (event) => {
   try {
+    // Extract the authorization code from query parameters
     const params = new URLSearchParams(event.queryStringParameters);
     const code = params.get("code");
 
@@ -12,10 +11,13 @@ exports.handler = async (event) => {
       };
     }
 
-    // Exchange code for access token
+    // Exchange code for GitHub access token using native fetch
     const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
       body: JSON.stringify({
         client_id: process.env.GITHUB_CLIENT_ID,
         client_secret: process.env.GITHUB_CLIENT_SECRET,
@@ -34,7 +36,7 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Redirect to Decap CMS admin with proper hash format (#access_token=...)
+    // Redirect to Decap CMS admin with proper hash format
     return {
       statusCode: 302,
       headers: {
