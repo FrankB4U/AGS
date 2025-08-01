@@ -4,57 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
-    <script>
-  // If Decap tries to rewrite to "#/", force it back to plain "#"
-  if (window.location.hash.startsWith("#/access_token=")) {
-    const fixedHash = "#" + window.location.hash.substring(2);
-    history.replaceState(null, "", window.location.pathname + fixedHash);
-  }
-</script>
 
     <script>
-      // Normalize query → hash before Decap loads
-      (function () {
-        const searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.has("access_token")) {
-          const token = searchParams.get("access_token");
-          const type = searchParams.get("token_type");
-          window.location.replace(`/admin#access_token=${token}&token_type=${type}`);
-        }
-      })();
-
-      // Continuously fix malformed #/access_token to #access_token
-      (function fixMalformedHash() {
-        function normalizeHash() {
-          if (window.location.hash.startsWith("#/access_token=")) {
-            const fixedHash = "#" + window.location.hash.substring(2);
-            console.log("Decap Patch: fixing malformed hash →", fixedHash);
-            window.location.replace(`/admin${fixedHash}`);
-          }
-        }
-
-        // Run immediately and then every 100ms for 3 seconds
-        normalizeHash();
-        let attempts = 0;
-        const interval = setInterval(() => {
-          attempts++;
-          normalizeHash();
-          if (attempts > 30) clearInterval(interval);
-        }, 100);
-      })();
+      // Normalize malformed hash once, without reloading
+      if (window.location.hash.startsWith("#/access_token=")) {
+        const fixedHash = "#" + window.location.hash.substring(2);
+        history.replaceState(null, "", window.location.pathname + fixedHash);
+      }
     </script>
   </head>
   <body>
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
-
-    <!-- Debug: Log token state -->
-    <script>
-      if (window.location.hash.includes("access_token")) {
-        console.log("Decap Debug: Final token in hash →", window.location.hash);
-      } else {
-        console.log("Decap Debug: No token detected in hash.");
-      }
-    </script>
   </body>
 </html>
