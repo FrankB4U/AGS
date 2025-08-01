@@ -5,30 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
-      function normalizeHash() {
-        if (window.location.search.includes('code=')) {
-          const cleanUrl =
-            window.location.origin +
-            window.location.pathname +
-            window.location.hash.replace('#/', '#');
-          window.history.replaceState({}, document.title, cleanUrl);
-        }
-        if (window.location.hash.startsWith('#/access_token=')) {
-          window.location.hash = window.location.hash.replace('#/', '#');
-        }
+      // --- Cleanup BEFORE CMS loads ---
+
+      // 1. Remove ?code= from URL
+      if (window.location.search.includes('code=')) {
+        const newUrl = window.location.origin + window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
       }
-      normalizeHash();
+
+      // 2. Convert #/access_token to #access_token
+      if (window.location.hash.startsWith('#/access_token=')) {
+        window.location.hash = window.location.hash.replace('#/', '#');
+      }
     </script>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms-app.js?v=2"></script>
-    <script>
-      normalizeHash();
-      if (typeof CMS !== "undefined") {
-        CMS.init();
-      } else {
-        console.error("Decap CMS failed to load");
-      }
-    </script>
+    <!-- Load Decap CMS (version 3.0.12 for stability) -->
+    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
   </body>
 </html>
