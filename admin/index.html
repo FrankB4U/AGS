@@ -5,19 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
-  // --- Cleanup BEFORE CMS loads ---
+  function normalizeHash() {
+    // Remove ?code= query if present
+    if (window.location.search.includes('code=')) {
+      const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
 
-  // Always remove ?code= from URL if present
-  if (window.location.search.includes('code=')) {
-    const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
-    window.history.replaceState({}, document.title, cleanUrl);
+    // Fix #/access_token → #access_token
+    if (window.location.hash.startsWith('#/access_token=')) {
+      window.location.hash = window.location.hash.replace('#/', '#');
+    }
   }
 
-  // Also ensure hash starts correctly
-  if (window.location.hash.startsWith('#/access_token=')) {
-    window.location.hash = window.location.hash.replace('#/', '#');
-  }
+  // Run immediately
+  normalizeHash();
+
+  // Also run again shortly after CMS loads (Decap may rewrite hash after init)
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(normalizeHash, 500);
+  });
 </script>
+
   </head>
   <body>
     <!-- Load Decap CMS (version 3.0.12 for stability) -->
