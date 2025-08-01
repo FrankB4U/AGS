@@ -1,3 +1,4 @@
+console.log("OAUTH CALLBACK QUERY:", event.queryStringParameters);
 exports.handler = async (event) => {
   const params = new URLSearchParams(event.queryStringParameters || {});
   const code = params.get("code");
