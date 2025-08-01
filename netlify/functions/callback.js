@@ -36,15 +36,13 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Build clean admin URL with hash only (no query string)
-    const adminUrl = new URL("/admin", process.env.URL);
-    adminUrl.hash = `access_token=${accessToken}&token_type=bearer`;
+    // Force redirect to clean URL (no leftover query string)
+    const adminUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
 
-    // Redirect user to Decap CMS admin with token in hash
     return {
       statusCode: 302,
       headers: {
-        Location: adminUrl.toString(),
+        Location: adminUrl,
       },
     };
   } catch (error) {
