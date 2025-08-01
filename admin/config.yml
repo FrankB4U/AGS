@@ -4,7 +4,7 @@ backend:
   branch: main
   base_url: https://agscms.netlify.app/.netlify/functions
   auth_endpoint: start
-  
+
 media_folder: "uploads"
 public_folder: "/uploads"
 
