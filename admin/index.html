@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
 
+    <!-- Fix malformed hash (#/access_token) without reload -->
     <script>
-      // Fix malformed hash (#/access_token) before Decap initializes
       if (window.location.hash.startsWith("#/access_token=")) {
         const fixedHash = "#" + window.location.hash.substring(2);
         history.replaceState(null, "", window.location.pathname + fixedHash);
       }
     </script>
 
-    <!-- Load Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
+    <!-- Load local Decap CMS build -->
+    <script src="/admin/decap-cms.js"></script>
   </head>
-  <body>
-  </body>
+  <body></body>
 </html>
