@@ -1,10 +1,4 @@
 exports.handler = async (event) => {
-  const testResponse = await fetch("https://api.github.com/user", {
-  headers: { Authorization: `token ${accessToken}` }
-});
-const testData = await testResponse.json();
-console.log("GitHub user API test:", testData);
-
   try {
     const params = new URLSearchParams(event.queryStringParameters);
     const code = params.get("code");
@@ -41,31 +35,9 @@ console.log("GitHub user API test:", testData);
 
     const accessToken = tokenData.access_token;
 
-    // Use query parameter format instead of hash
-    const cleanUrl = `${process.env.URL}/admin?access_token=${accessToken}&token_type=bearer`;
-
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "text/html" },
-      body: `
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <title>Redirecting…</title>
-            <script>
-              window.location.replace("${cleanUrl}");
-            </script>
-          </head>
-          <body>
-            Redirecting…
-          </body>
-        </html>
-      `,
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
-  }
-};
+    /** DEBUG STEP: Verify token works with GitHub API **/
+    const testResponse = await fetch("https://api.github.com/user", {
+      headers: { Authorization: `token ${accessToken}` }
+    });
+    const testData = await testResponse.json();
+    console.l
