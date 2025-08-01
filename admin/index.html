@@ -4,6 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
+    <script>
+  // If Decap tries to rewrite to "#/", force it back to plain "#"
+  if (window.location.hash.startsWith("#/access_token=")) {
+    const fixedHash = "#" + window.location.hash.substring(2);
+    history.replaceState(null, "", window.location.pathname + fixedHash);
+  }
+</script>
 
     <script>
       // Normalize query → hash before Decap loads
