@@ -6,7 +6,7 @@
     <title>Content Manager</title>
 
     <script>
-      // Normalize malformed hash once, without reloading
+      // Fix malformed hash (#/access_token) before Decap initializes
       if (window.location.hash.startsWith("#/access_token=")) {
         const fixedHash = "#" + window.location.hash.substring(2);
         history.replaceState(null, "", window.location.pathname + fixedHash);
