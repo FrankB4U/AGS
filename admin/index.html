@@ -5,22 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
-      // --- Cleanup BEFORE CMS loads ---
+      // This script cleans up the URL from the OAuth redirect BEFORE the CMS loads.
 
-      // 1. Remove ?code= from URL
-      if (window.location.search.includes('code=')) {
-        const newUrl = window.location.origin + window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, newUrl);
+      // 1. If the URL has a hash like #/access_token=..., convert it to #access_token=...
+      //    The CMS requires the hash to not have the leading slash.
+      if (window.location.hash.startsWith('#/')) {
+        const newHash = '#' + window.location.hash.substring(2);
+        const newUrl = window.location.pathname + window.location.search + newHash;
+        // Use replaceState to update the URL without reloading the page.
+        window.history.replaceState(null, document.title, newUrl);
       }
 
-      // 2. Convert #/access_token to #access_token
-      if (window.location.hash.startsWith('#/access_token=')) {
-        window.location.hash = window.location.hash.replace('#/', '#');
+      // 2. If the URL has a query param like ?code=..., remove it.
+      if (window.location.search.includes('code=')) {
+        const newUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState(null, document.title, newUrl);
       }
     </script>
   </head>
   <body>
-    <!-- Load Decap CMS (version 3.0.12 for stability) -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
-  </body>
+    </body>
 </html>
