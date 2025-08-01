@@ -4,34 +4,38 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
+
+    <script>
+      // Patch: Convert ?access_token=... to #access_token=... before Decap loads
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("access_token")) {
+          const token = params.get("access_token");
+          const type = params.get("token_type");
+          console.log("Decap Patch: Converting query token to hash token");
+          window.location.replace(`/admin#access_token=${token}&token_type=${type}`);
+        }
+      })();
+    </script>
   </head>
   <body>
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
 
-    <!-- Debug: Log token from hash or query -->
+    <!-- Debug: Log token detection for troubleshooting -->
     <script>
       (function () {
-        // Look for token in URL hash (Decap v3 uses this format)
         const hash = window.location.hash;
+        const params = new URLSearchParams(window.location.search);
 
-        if (hash && hash.includes("access_token")) {
+        if (hash.includes("access_token")) {
           console.log("Decap Debug: Token found in hash →", hash);
+        } else if (params.has("access_token")) {
+          console.log("Decap Debug: Token found in query (pre-patch) →", params.get("access_token").slice(0, 8) + "…");
         } else {
-          console.log("Decap Debug: No token found in hash. Current URL →", window.location.href);
+          console.log("Decap Debug: No token found in URL.");
         }
       })();
     </script>
-    <script>
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has("access_token")) {
-    console.log("Decap Debug: Token detected in query →", params.get("access_token").slice(0,8) + "…");
-  } else {
-    console.log("Decap Debug: No token detected in query.");
-  }
-})();
-</script>
-
   </body>
 </html>
