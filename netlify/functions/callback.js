@@ -1,5 +1,7 @@
 exports.handler = async (event) => {
+  // Log query for debugging (optional, can remove later)
   console.log("OAUTH CALLBACK QUERY:", event.queryStringParameters);
+
   const params = new URLSearchParams(event.queryStringParameters || {});
   const code = params.get("code");
 
@@ -34,12 +36,15 @@ exports.handler = async (event) => {
       };
     }
 
-    // **Redirect back to /admin with token in URL hash**
+    // Redirect directly to /admin with only hash (no ?code= in URL)
     const redirectUrl = `https://agscms.netlify.app/admin#access_token=${data.access_token}&token_type=bearer`;
 
     return {
       statusCode: 302,
-      headers: { Location: redirectUrl },
+      headers: {
+        Location: redirectUrl,
+        'Cache-Control': 'no-store', // Prevent caching old redirect
+      },
     };
   } catch (err) {
     return {
