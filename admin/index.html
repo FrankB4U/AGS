@@ -6,22 +6,16 @@
     <title>Content Manager</title>
 
     <script>
-      function normalizeHash() {
-        if (window.location.hash.startsWith("#/access_token=")) {
-          const fixedHash = "#" + window.location.hash.substring(2);
-          history.replaceState(null, "", window.location.pathname + fixedHash);
-        }
+      // Fix malformed hash (#/access_token) before Decap initializes
+      if (window.location.hash.startsWith("#/access_token=")) {
+        const fixedHash = "#" + window.location.hash.substring(2);
+        history.replaceState(null, "", window.location.pathname + fixedHash);
       }
-
-      // Run fix on load
-      normalizeHash();
-
-      // Run fix again whenever hash changes (Decap router init)
-      window.addEventListener("hashchange", normalizeHash);
     </script>
-  </head>
-  <body>
+
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
+  </head>
+  <body>
   </body>
 </html>
