@@ -1,21 +1,23 @@
-exports.handler = async (event) => {
-  const clientId = process.env.GITHUB_CLIENT_ID;
+exports.handler = async () => {
+  try {
+    // GitHub OAuth authorize URL
+    const authorizeUrl = new URL("https://github.com/login/oauth/authorize");
 
-  // GitHub OAuth endpoint
-  const githubAuthorizeUrl = "https://github.com/login/oauth/authorize";
+    authorizeUrl.searchParams.set("client_id", process.env.GITHUB_CLIENT_ID);
+    authorizeUrl.searchParams.set("redirect_uri", `${process.env.URL}/.netlify/functions/callback`);
+    authorizeUrl.searchParams.set("scope", "repo,user");
+    authorizeUrl.searchParams.set("allow_signup", "true");
 
-  // Redirect URI must match the callback function we will create next
-  const redirectUri = "https://agscms.netlify.app/.netlify/functions/callback";
-
-  // Build authorization URL
-  const url = `${githubAuthorizeUrl}?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-    redirectUri
-  )}&scope=repo`;
-
-  return {
-    statusCode: 302,
-    headers: {
-      Location: url,
-    },
-  };
+    return {
+      statusCode: 302,
+      headers: {
+        Location: authorizeUrl.toString(),
+      },
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+    };
+  }
 };
