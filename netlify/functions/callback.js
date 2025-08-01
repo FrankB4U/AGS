@@ -35,7 +35,7 @@ exports.handler = async (event) => {
     }
 
     // **Redirect back to /admin with token in URL hash**
-    const redirectUrl = `https://agscms.netlify.app/admin#access_token=${data.access_token}&token_type=bearer`
+    const redirectUrl = `https://agscms.netlify.app/admin#access_token=${data.access_token}&token_type=bearer`;
 
     return {
       statusCode: 302,
