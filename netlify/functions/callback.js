@@ -35,8 +35,8 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Ensure clean URL without extra slash
-    const cleanUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
+    // Use query parameter format instead of hash
+    const cleanUrl = `${process.env.URL}/admin?access_token=${accessToken}&token_type=bearer`;
 
     return {
       statusCode: 200,
