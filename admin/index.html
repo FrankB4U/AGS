@@ -7,13 +7,19 @@
     <title>Content Manager</title>
   </head>
   <body>
-    <script>
-  // Remove ?code=... from URL before Decap CMS initializes
+   <script>
+  // 1. Remove ?code= from URL
   if (window.location.search.includes('code=')) {
     const newUrl = window.location.origin + window.location.pathname + window.location.hash;
     window.history.replaceState({}, document.title, newUrl);
   }
+
+  // 2. Fix hash format (#/access_token → #access_token)
+  if (window.location.hash.startsWith('#/access_token=')) {
+    window.location.hash = window.location.hash.replace('#/', '#');
+  }
 </script>
+   
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
   </body>
 </html>
