@@ -43,7 +43,7 @@ exports.handler = async (event) => {
     console.log("GitHub API Debug: /user response →", testData);
 
     // Redirect to Decap CMS admin with token as query param
-    const cleanUrl = `${process.env.URL}/admin?access_token=${accessToken}&token_type=bearer`;
+    const cleanUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
 
     return {
       statusCode: 200,
