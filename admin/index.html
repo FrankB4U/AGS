@@ -6,14 +6,26 @@
     <title>Content Manager</title>
 
     <script>
-      // Patch: Convert ?access_token=... to #access_token=... before Decap loads
+      // Normalize token: Convert query or malformed hash to proper #access_token format
       (function () {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has("access_token")) {
-          const token = params.get("access_token");
-          const type = params.get("token_type");
+        const searchParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+
+        // If query ?access_token= exists → convert to hash
+        if (searchParams.has("access_token")) {
+          const token = searchParams.get("access_token");
+          const type = searchParams.get("token_type");
           console.log("Decap Patch: Converting query token to hash token");
           window.location.replace(`/admin#access_token=${token}&token_type=${type}`);
+          return;
+        }
+
+        // If malformed hash #/access_token= exists → fix to #access_token=
+        if (hash.startsWith("#/access_token=")) {
+          const fixedHash = "#" + hash.substring(2); // remove "/"
+          console.log("Decap Patch: Fixing malformed hash →", fixedHash);
+          window.location.replace(`/admin${fixedHash}`);
+          return;
         }
       })();
     </script>
@@ -22,18 +34,14 @@
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
 
-    <!-- Debug: Log token detection for troubleshooting -->
+    <!-- Debug: Log token detection -->
     <script>
       (function () {
         const hash = window.location.hash;
-        const params = new URLSearchParams(window.location.search);
-
         if (hash.includes("access_token")) {
-          console.log("Decap Debug: Token found in hash →", hash);
-        } else if (params.has("access_token")) {
-          console.log("Decap Debug: Token found in query (pre-patch) →", params.get("access_token").slice(0, 8) + "…");
+          console.log("Decap Debug: Token detected (final hash) →", hash);
         } else {
-          console.log("Decap Debug: No token found in URL.");
+          console.log("Decap Debug: No token detected in final hash.");
         }
       })();
     </script>
