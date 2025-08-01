@@ -22,5 +22,16 @@
         }
       })();
     </script>
+    <script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("access_token")) {
+    console.log("Decap Debug: Token detected in query →", params.get("access_token").slice(0,8) + "…");
+  } else {
+    console.log("Decap Debug: No token detected in query.");
+  }
+})();
+</script>
+
   </body>
 </html>
