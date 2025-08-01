@@ -5,35 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
+      // Cleanup: remove ?code and fix #/access_token
       function normalizeHash() {
-        // Remove ?code= query
         if (window.location.search.includes('code=')) {
-          const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
+          const cleanUrl =
+            window.location.origin +
+            window.location.pathname +
+            window.location.hash.replace('#/', '#');
           window.history.replaceState({}, document.title, cleanUrl);
         }
 
-        // Fix #/access_token → #access_token
         if (window.location.hash.startsWith('#/access_token=')) {
           window.location.hash = window.location.hash.replace('#/', '#');
         }
       }
 
-      // Run cleanup before CMS init
       normalizeHash();
     </script>
   </head>
   <body>
-    <!-- Load Decap CMS library -->
-    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
+    <!-- Use no-router build to prevent Decap from rewriting hash -->
+    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms-app.js"></script>
     <script>
-      // Ensure cleanup again right before init
       normalizeHash();
-
-      // Manually start Decap CMS
-      if (typeof CMS !== "undefined") {
+      if (typeof CMS !== 'undefined') {
         CMS.init();
       } else {
-        console.error("Decap CMS failed to load");
+        console.error('Decap CMS failed to load');
       }
     </script>
   </body>
