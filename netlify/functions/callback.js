@@ -1,6 +1,5 @@
 exports.handler = async (event) => {
   try {
-    // Extract the authorization code from query parameters
     const params = new URLSearchParams(event.queryStringParameters);
     const code = params.get("code");
 
@@ -11,7 +10,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // Exchange code for GitHub access token using native fetch
+    // Exchange code for GitHub access token
     const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -36,14 +35,26 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Force redirect to clean URL (no leftover query string)
-    const adminUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
+    // Return HTML that immediately rewrites URL to clean hash-only format
+    const cleanUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
 
     return {
-      statusCode: 302,
-      headers: {
-        Location: adminUrl,
-      },
+      statusCode: 200,
+      headers: { "Content-Type": "text/html" },
+      body: `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Redirecting…</title>
+            <script>
+              window.location.replace("${cleanUrl}");
+            </script>
+          </head>
+          <body>
+            Redirecting…
+          </body>
+        </html>
+      `,
     };
   } catch (error) {
     return {
