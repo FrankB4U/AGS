@@ -37,7 +37,36 @@ exports.handler = async (event) => {
 
     /** DEBUG STEP: Verify token works with GitHub API **/
     const testResponse = await fetch("https://api.github.com/user", {
-      headers: { Authorization: `token ${accessToken}` }
+      headers: { Authorization: `token ${accessToken}` },
     });
     const testData = await testResponse.json();
-    console.l
+    console.log("GitHub API Debug: /user response →", testData);
+
+    // Redirect to Decap CMS admin with token as query param
+    const cleanUrl = `${process.env.URL}/admin?access_token=${accessToken}&token_type=bearer`;
+
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "text/html" },
+      body: `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Redirecting…</title>
+            <script>
+              window.location.replace("${cleanUrl}");
+            </script>
+          </head>
+          <body>
+            Redirecting…
+          </body>
+        </html>
+      `,
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+    };
+  }
+};
