@@ -1,4 +1,10 @@
 exports.handler = async (event) => {
+  const testResponse = await fetch("https://api.github.com/user", {
+  headers: { Authorization: `token ${accessToken}` }
+});
+const testData = await testResponse.json();
+console.log("GitHub user API test:", testData);
+
   try {
     const params = new URLSearchParams(event.queryStringParameters);
     const code = params.get("code");
