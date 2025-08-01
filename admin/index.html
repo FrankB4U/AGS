@@ -4,26 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
-    <script>
-      // This script cleans up the URL from the OAuth redirect BEFORE the CMS loads.
-
-      // 1. If the URL has a hash like #/access_token=..., convert it to #access_token=...
-      //    The CMS requires the hash to not have the leading slash.
-      if (window.location.hash.startsWith('#/')) {
-        const newHash = '#' + window.location.hash.substring(2);
-        const newUrl = window.location.pathname + window.location.search + newHash;
-        // Use replaceState to update the URL without reloading the page.
-        window.history.replaceState(null, document.title, newUrl);
-      }
-
-      // 2. If the URL has a query param like ?code=..., remove it.
-      if (window.location.search.includes('code=')) {
-        const newUrl = window.location.pathname + window.location.hash;
-        window.history.replaceState(null, document.title, newUrl);
-      }
-    </script>
   </head>
   <body>
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
-    </body>
+  </body>
 </html>
