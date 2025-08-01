@@ -9,10 +9,18 @@
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
 
-    <!-- Optional: Custom preview templates or widgets -->
+    <!-- Debug: Log token from hash or query -->
     <script>
-      // Example placeholder for custom logic
-      // CMS.registerPreviewTemplate('posts', PostPreview);
+      (function () {
+        // Look for token in URL hash (Decap v3 uses this format)
+        const hash = window.location.hash;
+
+        if (hash && hash.includes("access_token")) {
+          console.log("Decap Debug: Token found in hash →", hash);
+        } else {
+          console.log("Decap Debug: No token found in hash. Current URL →", window.location.href);
+        }
+      })();
     </script>
   </body>
 </html>
