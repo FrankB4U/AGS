@@ -6,26 +6,18 @@
     <title>Content Manager</title>
 
     <script>
-      // Normalize token: Convert query or malformed hash to proper #access_token format
+      // Phase 1: Pre-load fix (query → hash)
       (function () {
         const searchParams = new URLSearchParams(window.location.search);
         const hash = window.location.hash;
 
-        // If query ?access_token= exists → convert to hash
         if (searchParams.has("access_token")) {
           const token = searchParams.get("access_token");
           const type = searchParams.get("token_type");
-          console.log("Decap Patch: Converting query token to hash token");
           window.location.replace(`/admin#access_token=${token}&token_type=${type}`);
-          return;
-        }
-
-        // If malformed hash #/access_token= exists → fix to #access_token=
-        if (hash.startsWith("#/access_token=")) {
+        } else if (hash.startsWith("#/access_token=")) {
           const fixedHash = "#" + hash.substring(2); // remove "/"
-          console.log("Decap Patch: Fixing malformed hash →", fixedHash);
           window.location.replace(`/admin${fixedHash}`);
-          return;
         }
       })();
     </script>
@@ -34,16 +26,22 @@
     <!-- Load Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
 
-    <!-- Debug: Log token detection -->
     <script>
-      (function () {
-        const hash = window.location.hash;
-        if (hash.includes("access_token")) {
-          console.log("Decap Debug: Token detected (final hash) →", hash);
-        } else {
-          console.log("Decap Debug: No token detected in final hash.");
+      // Phase 2: Post-load fix (in case Decap re-adds #/)
+      window.addEventListener("hashchange", function () {
+        if (window.location.hash.startsWith("#/access_token=")) {
+          const fixedHash = "#" + window.location.hash.substring(2);
+          console.log("Decap Patch (post-load): fixing hash to", fixedHash);
+          window.location.replace(`/admin${fixedHash}`);
         }
-      })();
+      });
+
+      // Debug: token detection
+      if (window.location.hash.includes("access_token")) {
+        console.log("Decap Debug: Final token detected →", window.location.hash);
+      } else {
+        console.log("Decap Debug: No final token in hash.");
+      }
     </script>
   </body>
 </html>
