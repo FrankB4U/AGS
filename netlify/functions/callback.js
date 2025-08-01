@@ -36,11 +36,15 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Redirect to Decap CMS admin with proper hash format
+    // Build clean admin URL with hash only (no query string)
+    const adminUrl = new URL("/admin", process.env.URL);
+    adminUrl.hash = `access_token=${accessToken}&token_type=bearer`;
+
+    // Redirect user to Decap CMS admin with token in hash
     return {
       statusCode: 302,
       headers: {
-        Location: `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`,
+        Location: adminUrl.toString(),
       },
     };
   } catch (error) {
