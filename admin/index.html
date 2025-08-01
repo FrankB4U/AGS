@@ -5,31 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
-  function normalizeHash() {
-    // Remove ?code= query if present
-    if (window.location.search.includes('code=')) {
-      const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
-      window.history.replaceState({}, document.title, cleanUrl);
-    }
+      function normalizeHash() {
+        // Remove ?code= query
+        if (window.location.search.includes('code=')) {
+          const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
 
-    // Fix #/access_token → #access_token
-    if (window.location.hash.startsWith('#/access_token=')) {
-      window.location.hash = window.location.hash.replace('#/', '#');
-    }
-  }
+        // Fix #/access_token → #access_token
+        if (window.location.hash.startsWith('#/access_token=')) {
+          window.location.hash = window.location.hash.replace('#/', '#');
+        }
+      }
 
-  // Run immediately
-  normalizeHash();
-
-  // Also run again shortly after CMS loads (Decap may rewrite hash after init)
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(normalizeHash, 500);
-  });
-</script>
-
+      // Run cleanup before CMS init
+      normalizeHash();
+    </script>
   </head>
   <body>
-    <!-- Load Decap CMS (version 3.0.12 for stability) -->
+    <!-- Load Decap CMS library -->
     <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
+    <script>
+      // Ensure cleanup again right before init
+      normalizeHash();
+
+      // Manually start Decap CMS
+      if (typeof CMS !== "undefined") {
+        CMS.init();
+      } else {
+        console.error("Decap CMS failed to load");
+      }
+    </script>
   </body>
 </html>
