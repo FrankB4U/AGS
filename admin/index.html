@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
     <script>
-      // --- Cleanup BEFORE CMS loads ---
+  // --- Cleanup BEFORE CMS loads ---
 
-      // 1. Remove ?code= from URL
-      if (window.location.search.includes('code=')) {
-        const newUrl = window.location.origin + window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, newUrl);
-      }
+  // Always remove ?code= from URL if present
+  if (window.location.search.includes('code=')) {
+    const cleanUrl = window.location.origin + window.location.pathname + window.location.hash.replace('#/', '#');
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 
-      // 2. Convert #/access_token to #access_token
-      if (window.location.hash.startsWith('#/access_token=')) {
-        window.location.hash = window.location.hash.replace('#/', '#'):
-      }
-    </script>
+  // Also ensure hash starts correctly
+  if (window.location.hash.startsWith('#/access_token=')) {
+    window.location.hash = window.location.hash.replace('#/', '#');
+  }
+</script>
   </head>
   <body>
     <!-- Load Decap CMS (version 3.0.12 for stability) -->
