@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Return HTML that immediately rewrites URL to clean hash-only format
+    // Ensure clean URL without extra slash
     const cleanUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
 
     return {
