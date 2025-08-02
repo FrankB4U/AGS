@@ -6,11 +6,10 @@
     <title>Content Manager</title>
 
     <script>
-      // Use manual init
+      // Enable manual init for stable Netlify CMS v2 flow
       window.CMS_MANUAL_INIT = true;
-      window.CMS_LOAD_CONFIG_FILE = false;
 
-      // Clean ?code param
+      // Clean ?code param from OAuth redirect
       if (window.location.search.includes("code=")) {
         const cleanUrl =
           window.location.origin + window.location.pathname + window.location.hash;
@@ -27,7 +26,7 @@
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
 
-      // Store token for Decap
+      // Store token in localStorage so CMS can use it
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -36,70 +35,3 @@
         if (token) {
           localStorage.setItem(
             "netlify-cms-user",
-            JSON.stringify({
-              token: token,
-              provider: "github",
-            })
-          );
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="nc-root"></div>
-
-    <script src="/admin/decap-cms.js"></script>
-
-    <script>
-      // Wait until CMS is defined, then initialize with inline config
-      function initWhenReady() {
-        if (window.CMS && typeof CMS.init === "function") {
-          CMS.init({
-            config: {
-              backend: {
-                name: "github",
-                repo: "FrankB4U/AGS",
-                branch: "main",
-                base_url: "https://agscms.netlify.app/.netlify/functions",
-                auth_endpoint: "start"
-              },
-              media_folder: "uploads",
-              public_folder: "/uploads",
-              collections: [
-                {
-                  name: "posts",
-                  label: "Promotions & News",
-                  folder: "posts",
-                  create: true,
-                  slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
-                  fields: [
-                    { label: "Title", name: "title", widget: "string" },
-                    { label: "Date", name: "date", widget: "datetime" },
-                    { label: "Body", name: "body", widget: "markdown" },
-                    { label: "Image", name: "image", widget: "image", required: false }
-                  ]
-                },
-                {
-                  name: "prices",
-                  label: "Price List",
-                  folder: "prices",
-                  create: true,
-                  slug: "{{slug}}",
-                  fields: [
-                    { label: "Material Name", name: "material", widget: "string" },
-                    { label: "Price per unit", name: "price", widget: "string" },
-                    { label: "Description", name: "description", widget: "text", required: false },
-                    { label: "Last Updated", name: "date", widget: "datetime" }
-                  ]
-                }
-              ]
-            }
-          });
-        } else {
-          setTimeout(initWhenReady, 50); // Retry until CMS is available
-        }
-      }
-      initWhenReady();
-    </script>
-  </body>
-</html>
