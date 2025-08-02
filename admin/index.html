@@ -26,14 +26,36 @@
 
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
+
+      // Manually extract token and store for Decap
+      (function storeToken() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const token = params.get("access_token");
+
+        if (token) {
+          localStorage.setItem(
+            "netlify-cms-user",
+            JSON.stringify({
+              token: token,
+              provider: "github",
+            })
+          );
+        }
+      })();
     </script>
   </head>
   <body>
     <div id="nc-root"></div>
 
+    <!-- Load local Decap CMS build -->
     <script src="/admin/decap-cms.js"></script>
+
     <script>
-      CMS.init();
+      // Initialize CMS manually, explicitly passing config path
+      CMS.init({
+        config: "/admin/config.yml"
+      });
     </script>
   </body>
 </html>
