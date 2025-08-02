@@ -6,29 +6,24 @@
     <title>Content Manager</title>
 
     <script>
-      // Disable auto-init and external config load
-      window.CMS_MANUAL_INIT = true;
-      window.CMS_LOAD_CONFIG_FILE = false;
+      // Clean ?code param from URL (GitHub OAuth)
+      if (window.location.search.includes("code=")) {
+        const cleanUrl =
+          window.location.origin + window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
 
-      // Clean ?code and malformed hash
-      (function cleanOAuthUrl() {
-        if (window.location.search.includes("code=")) {
-          const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
-          window.history.replaceState({}, document.title, cleanUrl);
-        }
-      })();
-
+      // Fix malformed hash #/access_token → #access_token
       function cleanOAuthHash() {
         if (window.location.hash.startsWith("#/access_token=")) {
           const fixedHash = "#" + window.location.hash.substring(2);
           window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
         }
       }
-
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
 
-      // Manually extract and store token
+      // Store token for Decap to use
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -44,56 +39,59 @@
           );
         }
       })();
+
+      // Prevent external config fetch (404)
+      window.CMS_LOAD_CONFIG_FILE = false;
     </script>
   </head>
   <body>
     <div id="nc-root"></div>
 
+    <!-- Load Decap CMS -->
     <script src="/admin/decap-cms.js"></script>
+
     <script>
-      // Wait until everything is loaded before initializing CMS
-      window.addEventListener('DOMContentLoaded', function () {
-        CMS.init({
-          config: {
-            backend: {
-              name: "github",
-              repo: "FrankB4U/AGS",
-              branch: "main",
-              base_url: "https://agscms.netlify.app/.netlify/functions",
-              auth_endpoint: "start"
+      // Provide inline config directly to CMS
+      CMS.init({
+        config: {
+          backend: {
+            name: "github",
+            repo: "FrankB4U/AGS",
+            branch: "main",
+            base_url: "https://agscms.netlify.app/.netlify/functions",
+            auth_endpoint: "start"
+          },
+          media_folder: "uploads",
+          public_folder: "/uploads",
+          collections: [
+            {
+              name: "posts",
+              label: "Promotions & News",
+              folder: "posts",
+              create: true,
+              slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
+              fields: [
+                { label: "Title", name: "title", widget: "string" },
+                { label: "Date", name: "date", widget: "datetime" },
+                { label: "Body", name: "body", widget: "markdown" },
+                { label: "Image", name: "image", widget: "image", required: false }
+              ]
             },
-            media_folder: "uploads",
-            public_folder: "/uploads",
-            collections: [
-              {
-                name: "posts",
-                label: "Promotions & News",
-                folder: "posts",
-                create: true,
-                slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
-                fields: [
-                  { label: "Title", name: "title", widget: "string" },
-                  { label: "Date", name: "date", widget: "datetime" },
-                  { label: "Body", name: "body", widget: "markdown" },
-                  { label: "Image", name: "image", widget: "image", required: false }
-                ]
-              },
-              {
-                name: "prices",
-                label: "Price List",
-                folder: "prices",
-                create: true,
-                slug: "{{slug}}",
-                fields: [
-                  { label: "Material Name", name: "material", widget: "string" },
-                  { label: "Price per unit", name: "price", widget: "string" },
-                  { label: "Description", name: "description", widget: "text", required: false },
-                  { label: "Last Updated", name: "date", widget: "datetime" }
-                ]
-              }
-            ]
-          }
-        });
+            {
+              name: "prices",
+              label: "Price List",
+              folder: "prices",
+              create: true,
+              slug: "{{slug}}",
+              fields: [
+                { label: "Material Name", name: "material", widget: "string" },
+                { label: "Price per unit", name: "price", widget: "string" },
+                { label: "Description", name: "description", widget: "text", required: false },
+                { label: "Last Updated", name: "date", widget: "datetime" }
+              ]
+            }
+          ]
+        }
       });
     </script>
   </body>
