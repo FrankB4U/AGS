@@ -6,10 +6,11 @@
     <title>Content Manager</title>
 
     <script>
-      // Disable auto-init; we will control init
+      // Disable auto-init and external config load
       window.CMS_MANUAL_INIT = true;
+      window.CMS_LOAD_CONFIG_FILE = false;
 
-      // Clean query (?code) and malformed hash (#/access_token)
+      // Clean ?code and malformed hash
       (function cleanOAuthUrl() {
         if (window.location.search.includes("code=")) {
           const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
@@ -27,7 +28,7 @@
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
 
-      // Store token manually for Decap
+      // Manually extract and store token
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -48,11 +49,9 @@
   <body>
     <div id="nc-root"></div>
 
-    <!-- Load local Decap CMS -->
     <script src="/admin/decap-cms.js"></script>
-
     <script>
-      // Initialize CMS with inline config
+      // Initialize with inline config
       CMS.init({
         config: {
           backend: {
