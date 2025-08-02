@@ -6,12 +6,19 @@
     <title>Content Manager</title>
 
     <script>
-      // Fix malformed hash from Decap router
-      if (window.location.hash.startsWith("#/access_token=")) {
-        const fixedHash = "#" + window.location.hash.substring(2);
-        history.replaceState(null, "", window.location.pathname + fixedHash);
-      }
-    </script>
+  // Remove ?code=... from URL on page load
+  if (window.location.search.includes("code=")) {
+    const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // Fix malformed hash (#/access_token) if present
+  if (window.location.hash.startsWith("#/access_token=")) {
+    const fixedHash = "#" + window.location.hash.substring(2);
+    history.replaceState(null, "", window.location.pathname + fixedHash);
+  }
+</script>
+
   </head>
   <body>
     <div id="nc-root"></div>
