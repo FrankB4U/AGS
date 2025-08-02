@@ -6,39 +6,31 @@
     <title>Content Manager</title>
 
     <script>
-      // Prevent auto init
+      // Disable auto-init; we will control init
       window.CMS_MANUAL_INIT = true;
 
-      // Clean query (?code) and hash (#/access_token)
-      if (window.location.search.includes("code=")) {
-        const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
-      if (window.location.hash.startsWith("#/access_token=")) {
-        const fixedHash = "#" + window.location.hash.substring(2);
-        window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
-      }
-
-      // Manually handle token storage
-      (function storeToken() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const token = params.get("access_token");
-
-        if (token) {
-          localStorage.setItem(
-            "netlify-cms-user",
-            JSON.stringify({
-              token: token,
-              provider: "github",
-            })
-          );
+      // Clean query (?code) and hash (#/access_token) immediately
+      (function cleanOAuthUrl() {
+        if (window.location.search.includes("code=")) {
+          const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+          window.history.replaceState({}, document.title, cleanUrl);
         }
       })();
+
+      function cleanOAuthHash() {
+        if (window.location.hash.startsWith("#/access_token=")) {
+          const fixedHash = "#" + window.location.hash.substring(2);
+          window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
+        }
+      }
+
+      cleanOAuthHash();
+      window.addEventListener("hashchange", cleanOAuthHash);
     </script>
   </head>
   <body>
     <div id="nc-root"></div>
+
     <script src="/admin/decap-cms.js"></script>
     <script>
       CMS.init();
