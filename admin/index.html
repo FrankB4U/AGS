@@ -5,23 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
 
-   <script>
-  // Fix GitHub ?code param (just in case)
-  if (window.location.search.includes("code=")) {
-    const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
+    <script>
+      // --- Clean up URL before CMS loads ---
+      // Remove ?code= from URL
+      if (window.location.search.includes("code=")) {
+        const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
 
-  // Fix malformed hash #/access_token → #access_token
-  if (window.location.hash.startsWith("#/access_token=")) {
-    const fixedHash = "#" + window.location.hash.substring(2);
-    window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
-  }
-</script>
-
+      // Fix malformed hash #/access_token → #access_token
+      if (window.location.hash.startsWith("#/access_token=")) {
+        const fixedHash = "#" + window.location.hash.substring(2);
+        window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
+      }
+    </script>
   </head>
   <body>
+    <!-- Mount point for Decap CMS -->
     <div id="nc-root"></div>
+
+    <!-- Load Decap CMS locally (downloaded from unpkg) -->
     <script src="/admin/decap-cms.js"></script>
   </body>
 </html>
