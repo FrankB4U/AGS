@@ -6,6 +6,7 @@
     <title>Content Manager</title>
 
     <script>
+      // Disable auto-init so we control auth and init
       window.CMS_MANUAL_INIT = true;
 
       // Clean ?code and #/access_token
@@ -18,7 +19,7 @@
         window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
       }
 
-      // Store token manually
+      // Manually extract and store token
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -39,12 +40,12 @@
   <body>
     <div id="nc-root"></div>
 
+    <!-- Load local Decap CMS build -->
     <script src="/admin/decap-cms.js"></script>
+
     <script>
-      // Explicitly pass config path when manually initializing
-      CMS.init({
-        config: "/admin/config.yml"
-      });
+      // Initialize CMS manually after token storage
+      CMS.init();
     </script>
   </body>
 </html>
