@@ -9,7 +9,7 @@
       // Disable auto-init; we will control init
       window.CMS_MANUAL_INIT = true;
 
-      // Clean query (?code) and hash (#/access_token) immediately
+      // Clean query (?code) and malformed hash (#/access_token)
       (function cleanOAuthUrl() {
         if (window.location.search.includes("code=")) {
           const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
@@ -27,7 +27,7 @@
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
 
-      // Manually extract token and store for Decap
+      // Store token manually for Decap
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -48,14 +48,52 @@
   <body>
     <div id="nc-root"></div>
 
-    <!-- Load local Decap CMS build -->
+    <!-- Load local Decap CMS -->
     <script src="/admin/decap-cms.js"></script>
 
     <script>
-  CMS.init({
-    config: "/admin/config.yml",
-    load_config_file: true
-  });
-</script>
+      // Initialize CMS with inline config
+      CMS.init({
+        config: {
+          backend: {
+            name: "github",
+            repo: "FrankB4U/AGS",
+            branch: "main",
+            base_url: "https://agscms.netlify.app/.netlify/functions",
+            auth_endpoint: "start"
+          },
+          media_folder: "uploads",
+          public_folder: "/uploads",
+          collections: [
+            {
+              name: "posts",
+              label: "Promotions & News",
+              folder: "posts",
+              create: true,
+              slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
+              fields: [
+                { label: "Title", name: "title", widget: "string" },
+                { label: "Date", name: "date", widget: "datetime" },
+                { label: "Body", name: "body", widget: "markdown" },
+                { label: "Image", name: "image", widget: "image", required: false }
+              ]
+            },
+            {
+              name: "prices",
+              label: "Price List",
+              folder: "prices",
+              create: true,
+              slug: "{{slug}}",
+              fields: [
+                { label: "Material Name", name: "material", widget: "string" },
+                { label: "Price per unit", name: "price", widget: "string" },
+                { label: "Description", name: "description", widget: "text", required: false },
+                { label: "Last Updated", name: "date", widget: "datetime" }
+              ]
+            }
+          ]
+        }
+      });
+    </script>
   </body>
 </html>
