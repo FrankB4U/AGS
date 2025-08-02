@@ -26,12 +26,14 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Hardcoded site URL (no environment variable needed)
-    const redirectUrl = `https://agscms.netlify.app/admin#access_token=${accessToken}&token_type=bearer`;
-
+    // Hardcoded URL - drop ?code completely
     return {
       statusCode: 302,
-      headers: { Location: redirectUrl },
+      headers: {
+        Location: `https://agscms.netlify.app/admin#access_token=${accessToken}&token_type=bearer`,
+        // Explicitly prevent query persistence
+        "Cache-Control": "no-store",
+      },
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
