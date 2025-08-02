@@ -6,17 +6,13 @@
     <title>Content Manager</title>
 
     <script>
-      // Manual init for v2
-      window.CMS_MANUAL_INIT = true;
-
-      // Clean ?code param from OAuth redirect
+      // Clean OAuth redirect artifacts
       if (window.location.search.includes("code=")) {
         const cleanUrl =
           window.location.origin + window.location.pathname + window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
       }
 
-      // Fix malformed hash #/access_token → #access_token
       function cleanOAuthHash() {
         if (window.location.hash.startsWith("#/access_token=")) {
           const fixedHash = "#" + window.location.hash.substring(2);
@@ -26,7 +22,7 @@
       cleanOAuthHash();
       window.addEventListener("hashchange", cleanOAuthHash);
 
-      // Store token in localStorage
+      // Store token for CMS
       (function storeToken() {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -43,16 +39,15 @@
         }
       })();
 
-      // Disable config.yml fetch
+      // Prevent external config fetch
       window.CMS_LOAD_CONFIG_FILE = false;
     </script>
   </head>
   <body>
     <div id="nc-root"></div>
 
-    <!-- IMPORTANT: Load Netlify CMS v2 (not decap) -->
-    <script src="https://unpkg.com/netlify-cms-app@2.10.192/dist/netlify-cms.js" defer></script>
-
+    <!-- Load self-hosted Netlify CMS v2 -->
+    <script src="/admin/netlify-cms.js"></script>
 
     <script>
       CMS.init({
