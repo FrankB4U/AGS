@@ -52,10 +52,10 @@
     <script src="/admin/decap-cms.js"></script>
 
     <script>
-      // Initialize CMS manually, explicitly passing config path
-      CMS.init({
-        config: "/admin/config.yml"
-      });
-    </script>
+  CMS.init({
+    config: "/admin/config.yml",
+    load_config_file: true
+  });
+</script>
   </body>
 </html>
