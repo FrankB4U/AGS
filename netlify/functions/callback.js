@@ -26,12 +26,14 @@ exports.handler = async (event) => {
 
     const accessToken = tokenData.access_token;
 
-    // Hardcoded URL - drop ?code completely
+    // Redirect to clean URL with token (no ?code)
+    const cleanUrl = `https://agscms.netlify.app/admin#access_token=${accessToken}&token_type=bearer`;
+
     return {
       statusCode: 302,
       headers: {
-        Location: `https://agscms.netlify.app/admin#access_token=${accessToken}&token_type=bearer`,
-        // Explicitly prevent query persistence
+        Location: cleanUrl,
+        // Prevent caching of intermediate redirects
         "Cache-Control": "no-store",
       },
     };
