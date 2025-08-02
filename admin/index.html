@@ -6,25 +6,35 @@
     <title>Content Manager</title>
 
     <script>
-      // --- Clean up URL before CMS loads ---
-      // Remove ?code= from URL
-      if (window.location.search.includes("code=")) {
-        const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
+      // Disable Decap CMS auto-init; we'll init manually after cleaning URL
+      window.CMS_MANUAL_INIT = true;
 
-      // Fix malformed hash #/access_token → #access_token
-      if (window.location.hash.startsWith("#/access_token=")) {
-        const fixedHash = "#" + window.location.hash.substring(2);
-        window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
-      }
+      // Clean up URL BEFORE CMS starts
+      (function cleanOAuthUrl() {
+        // Remove ?code= param (from GitHub OAuth)
+        if (window.location.search.includes("code=")) {
+          const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+
+        // Fix malformed hash #/access_token → #access_token
+        if (window.location.hash.startsWith("#/access_token=")) {
+          const fixedHash = "#" + window.location.hash.substring(2);
+          window.history.replaceState({}, document.title, window.location.pathname + fixedHash);
+        }
+      })();
     </script>
   </head>
   <body>
     <!-- Mount point for Decap CMS -->
     <div id="nc-root"></div>
 
-    <!-- Load Decap CMS locally (downloaded from unpkg) -->
+    <!-- Load local Decap CMS build -->
     <script src="/admin/decap-cms.js"></script>
+
+    <script>
+      // Initialize CMS manually after cleaning URL
+      CMS.init();
+    </script>
   </body>
 </html>
