@@ -25,7 +25,10 @@ exports.handler = async (event) => {
     }
 
     const accessToken = tokenData.access_token;
-    const redirectUrl = `${process.env.URL}/admin#access_token=${accessToken}&token_type=bearer`;
+
+    // Hardcoded site URL (no environment variable needed)
+    const redirectUrl = `https://agscms.netlify.app/admin#access_token=${accessToken}&token_type=bearer`;
+
     return {
       statusCode: 302,
       headers: { Location: redirectUrl },
